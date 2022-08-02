@@ -1,0 +1,19 @@
+{
+  "name": "realnotes",
+  "version": "1.0.0",
+  "description": "A realtime note sharing app",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "darsh s kumar",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.18.1",
+    "express-ws": "^5.0.2",
+    "python": "^0.0.4",
+    "uuid": "^8.3.2",
+    "websocket": "^1.0.34",
+    "ws": "^8.8.1"
+  }
+}
