@@ -25,8 +25,15 @@ wss.on("connection",(ws)=>{
 	clients.push(ws);
         console.log("number of connected users: "+clients.length);
         //});
+	ws.on("close",()=>{
+		console.log(ws.id+" left");
+		cliIndex = clients.findIndex(i=>i.id===ws.id);
+		console.log("deleted user: "+cliIndex);
+		if(cliIndex>-1)
+			clients.splice(cliIndex,1);
+	});
 	ws.on("message",(m)=>{
-		console.log("%s from client %s",m,ws.id)
+		console.log("%s from client %s to",m,ws.id)
 		emit(ws,JSON.stringify(m));
 	});
 });
@@ -37,7 +44,7 @@ function emit(emitter,mesg){
 	for(let i = 0;i<clients.length;i++){
 		if(emitter.id != clients[i].id&&emitter.urlid==clients[i].urlid){
 			clients[i].send(mesg);
-			console.log("emmited to "+clients[i].id);
+			console.log("emmited to client "+i);
 		}
 	}
 }
