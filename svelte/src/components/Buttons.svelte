@@ -4,7 +4,7 @@ export let btn=[];
 
 <div class="button-container">
 {#each btn as bt}
-	<button class="button">{bt}</button>
+	<button class="button" id={bt}>{bt}</button>
 {/each}
 </div>
 <style>

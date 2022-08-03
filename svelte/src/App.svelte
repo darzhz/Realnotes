@@ -2,6 +2,7 @@
 	import Button from './components/Buttons.svelte';
 	let state = "";
 	let tf;
+	let share;
 	let time = null;
 	const loc = (window.location.href).replace("http","ws");
 	let ws = new WebSocket(loc);
@@ -13,6 +14,7 @@
     });
     window.onload=()=>{
 	tf = document.querySelector("#tf");
+	share = document.querySelector("#Share");
 	/*tf.addEventListener('change',()=>{
 		ws.send(tf.value);
 	});*/
@@ -22,11 +24,33 @@
 			ws.send(tf.value);
 		},1000);
 	});
+	share.addEventListener('click', event => {
+ 	 if (navigator.share) {
+ 	   navigator.share({
+	      title: 'checkout this Live notes',
+	      url: window.location.href
+    	}).then(() => {
+      		console.log('Thanks for sharing!');
+    })
+    .catch(console.error);
+  } else {
+    navigator.clipboard.writeText(window.location.href);
+  }
+});
 	}
 </script>
+	<svelte:head>
+	<meta charset="UTF-8">
+	<meta name="description" content="A realtime temporary notes sharing app">
+	<meta name="theme-color" content="#454545">
+	<meta name="keywords" content="Realtime,notes,websocket">
+	<meta name="author" content="Darsh">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	</svelte:head>
+
 
 <main>
-	<h1>Real time notes</h1>
+	<h1>RealTime notes</h1>
 	<textarea id="tf"></textarea>
 	<Button btn={["Share","close"]}/>
 </main>
