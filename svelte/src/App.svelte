@@ -41,6 +41,7 @@
 </script>
 	<svelte:head>
 	<meta charset="UTF-8">
+	<title>Realnotes</title>
 	<meta name="description" content="A realtime temporary notes sharing app">
 	<meta name="theme-color" content="#454545">
 	<meta name="keywords" content="Realtime,notes,websocket">
