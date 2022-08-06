@@ -1,9 +1,17 @@
 <script>
 	import Button from './components/Buttons.svelte';
+	import Home from './components/Home.svelte';
 	let state = "";
 	let tf;
 	let share;
+	let home;
+	let isHome=false;
 	let time = null;
+	window.onload=()=>{
+	if(window.location.href == window.location.origin+'/'){
+                console.log("we're home");
+                isHome = true;
+        }else{
 	const loc = (window.location.href).replace("http","ws");
 	let ws = new WebSocket(loc);
 	let enc = new TextDecoder("utf8");
@@ -12,12 +20,9 @@
 	tf.value = enc.decode(new Uint8Array(JSON.parse(event.data).data));
 
     });
-    window.onload=()=>{
 	tf = document.querySelector("#tf");
 	share = document.querySelector("#Share");
-	/*tf.addEventListener('change',()=>{
-		ws.send(tf.value);
-	});*/
+	home = document.querySelector("#home");
 	tf.addEventListener('keyup',()=>{
 		clearTimeout(time);
 		time = setTimeout(()=>{
@@ -37,6 +42,10 @@
     navigator.clipboard.writeText(window.location.href);
   }
 });
+	home.addEventListener('click',()=>{
+		window.location.href = window.location.origin;
+	});
+	}
 	}
 </script>
 	<svelte:head>
@@ -51,9 +60,13 @@
 
 <body>
 <main>
+	{#if isHome}
+		<Home/>
+	{:else}
 	<h1>RealTime notes</h1>
 	<textarea id="tf"></textarea>
-	<Button btn={["Share","close"]}/>
+	<Button btn={["Share","Home"]}/>
+	{/if}
 </main>
 </body>
 <style>

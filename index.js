@@ -11,7 +11,7 @@ let con = null;
 let curUser= null;
 app.use(express.static(build));
 app.get('/', (req, res) => {
-  res.sendFile("index.html");
+  res.send("index.html");
 });
 app.get('/:id',(req,res,next) => {
 	res.sendFile(__dirname+"/svelte/public/index.html");
