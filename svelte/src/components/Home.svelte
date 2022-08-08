@@ -1,13 +1,34 @@
 <script>
-
+	import { fade } from 'svelte/transition';
+	let target = '';
+	let joinbtn = false;
+	function join(){
+		if(target.length>=4&&target.length<=12)
+			joinbtn = true;
+		else
+			joinbtn = false;
+	}
+	function generateUrl(){
+	let url = window.crypto.getRandomValues(new BigUint64Array(1))[0].toString(36);
+	return url;
+	}
+	function New(){
+		if(joinbtn){
+		target = target.replace(' ','_');
+		window.location.href += target;
+		}else
+		window.location.href += generateUrl();
+	}
 </script>
 <h1>Realnotes</h1>
 <div class="wrapper">
 	<div class="whopper">
 	<div class="sub-wrapper">
-		<button label="new note" id="new"> New note </button>
-		<input label="input link" type="text" placeholder="Enter a Code or a link"/>
-		<button id="join">join</button>
+		<button label="new note" on:click={New} id="new">New note</button>
+		<input label="input link" on:input={join} bind:value={target} type="text" placeholder="Enter a Code or a link"/>
+		{#if joinbtn}
+		<button transition:fade on:click={New} id="join">join</button>
+		{/if}
 	</div>
 	<div class="info">
 		<h2>A real time notes app for everyone</h2>
@@ -88,7 +109,6 @@
   border-bottom-right-radius:0;
 	}
 	#join{
-	display:none;
         margin:0;
 	padding:0;                                                    height:30px;
         width:50px;
