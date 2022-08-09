@@ -17,7 +17,12 @@
 	let enc = new TextDecoder("utf8");
 	ws.addEventListener('message',(event)=>{
         console.log('Message from server ', event.data);
-	tf.value = enc.decode(new Uint8Array(JSON.parse(event.data).data));
+	
+	let textS = enc.decode(new Uint8Array(JSON.parse(event.data).data));
+	if(textS !='')
+		tf.value = textS;
+	else
+		ws.send(tf.value);
 
     });
 	tf = document.querySelector("#tf");

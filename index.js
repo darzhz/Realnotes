@@ -22,6 +22,7 @@ wss.on("connection",(ws)=>{
 	//ws.on("open",()=>{
         ws.id=uuidv4();
 	ws.urlid=curUser;
+	emit(ws,JSON.stringify(''));
 	clients.push(ws);
         console.log("number of connected users: "+clients.length);
         //});
