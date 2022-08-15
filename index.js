@@ -1,3 +1,5 @@
+require('dotenv').config();
+const { MongoClient, ServerApiVersion,ObjectId } = require('mongodb');
 const express = require('express');
 const path = require('path');
 const app = express();
@@ -17,12 +19,26 @@ app.get('/:id',(req,res,next) => {
 	res.sendFile(__dirname+"/svelte/public/index.html");
 	curUser= req.params.id;
 });
-wss.on("connection",(ws)=>{
+wss.on("connection",async (ws)=>{
 	console.log("new connection");
 	//ws.on("open",()=>{
         ws.id=uuidv4();
 	ws.urlid=curUser;
-	emit(ws,JSON.stringify(''));
+	//if there are no users search database
+	if(noConnectedClients(ws.urlid)==0){
+		let text;
+		let res = await search(ws.urlid);
+		console.log(res);
+	   if(res){
+		text = JSON.stringify(res.data.text);
+		ws.send(text);
+	   }else{
+		insertNew(ws.urlid,'');
+		console.log('database insertion');
+		}
+	}else{
+		emit(ws,JSON.stringify(''));
+	}
 	clients.push(ws);
         console.log("number of connected users: "+clients.length);
         //});
@@ -34,13 +50,29 @@ wss.on("connection",(ws)=>{
 			clients.splice(cliIndex,1);
 	});
 	ws.on("message",(m)=>{
-		console.log("%s from client %s to",m,ws.id)
-		emit(ws,JSON.stringify(m));
+		console.log("%s from client %s to",m,ws.id);
+		let message = Buffer.from(m,"utf-8").toString();
+		emit(ws,message);
+		if(noConnectedClients(ws.urlid)<2&&m!=''){
+		update(ws.urlid,message);
+		console.log('update request');
+		}
 	});
 });
 server.listen(port, () => {
   console.log(`Example app listening on port ${port}`)
 });
+//
+//		Utility functions
+//
+function noConnectedClients(url){
+	let count = 0;
+	for(let i = 0;i < clients.length;i++){
+		if(clients[i].urlid == url)
+			count++;
+	}
+	return count;
+}
 function emit(emitter,mesg){
 	for(let i = 0;i<clients.length;i++){
 		if(emitter.id != clients[i].id&&emitter.urlid==clients[i].urlid){
@@ -55,3 +87,37 @@ function uuidv4() {
     return v.toString(16);
   });
 }
+const usrname = process.env.USR_NAME;
+const passwrd   = process.env.PASSWRD
+const uri = "mongodb+srv://"+usrname+":"+passwrd+"@cluster0.yazfjdn.mongodb.net/?retryWrites=true&w=majority";
+async function insertNew(url,text){
+        const client = new MongoClient(uri);
+        const dbName = 'realnotes';
+        const db = client.db(dbName);                        const collection = db.collection('notes');
+        let isoString = new Date(Date.now()).toISOString();
+        const insertResult = await collection.insertOne(     {
+                "time":new Date(isoString),
+                "data":{ "text":text,
+                        "url":url
+                        }
+        });
+        console.log('Inserted documents =>', insertResult);
+        client.close();
+        return 'done.';
+        }
+async function search(url){
+        const client = new MongoClient(uri);
+        const dbName = 'realnotes';
+        const db = client.db(dbName);                        const collection = db.collection('notes');
+        let result = await collection.findOne({"data.url":url})
+        client.close();
+        return result;
+        }
+async function update(url,text){
+        const client = new MongoClient(uri);
+        const dbName = 'realnotes';
+        const db = client.db(dbName);                        const collection = db.collection('notes');
+        const updateResult = await collection.updateMany({ "data.url": url }, { $set: { "data.text": text } },{multi:true});
+        client.close();
+        return updateResult;
+        }

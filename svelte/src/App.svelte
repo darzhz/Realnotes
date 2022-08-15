@@ -1,6 +1,7 @@
 <script>
 	import Button from './components/Buttons.svelte';
 	import Home from './components/Home.svelte';
+	import {fly,fade} from 'svelte/transition';
 	let state = "";
 	let tf;
 	let share;
@@ -8,6 +9,9 @@
 	let isHome=false;
 	let time = null;
 	window.onload=()=>{
+	/*if (location.protocol != 'https:') {
+ 	location.href = 'https:' + window.location.href.substring(window.location.protocol.length);
+	}*/
 	if(window.location.href == window.location.origin+'/'){
                 console.log("we're home");
                 isHome = true;
@@ -17,10 +21,11 @@
 	let enc = new TextDecoder("utf8");
 	ws.addEventListener('message',(event)=>{
         console.log('Message from server ', event.data);
-	
-	let textS = enc.decode(new Uint8Array(JSON.parse(event.data).data));
+	console.log(event.data+" "+typeof event.data);
+	let textS = event.data;
+	console.log(textS+" "+typeof textS);
 	if(textS !='')
-		tf.value = textS;
+		tf.value = JSON.parse(textS);
 	else
 		ws.send(tf.value);
 
@@ -69,7 +74,7 @@
 		<Home/>
 	{:else}
 	<h1>RealTime notes</h1>
-	<textarea id="tf"></textarea>
+	<textarea id="tf" transition:fade></textarea>
 	<Button btn={["Share","Home"]}/>
 	{/if}
 </main>

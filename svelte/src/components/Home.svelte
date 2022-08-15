@@ -1,5 +1,5 @@
 <script>
-	import { fade } from 'svelte/transition';
+	import { fade,fly } from 'svelte/transition';
 	let target = '';
 	let joinbtn = false;
 	function join(){
@@ -21,7 +21,7 @@
 	}
 </script>
 <h1>Realnotes</h1>
-<div class="wrapper">
+<div class="wrapper" in:fly="{{ y: 100, duration: 1000 }}" out:fade>
 	<div class="whopper">
 	<div class="sub-wrapper">
 		<button label="new note" on:click={New} id="new">New note</button>
@@ -152,7 +152,7 @@
 	padding-left:10px;
 	font-family: 'Nunito Sans', sans-serif;
 	font-weight:200;
-	font-size:0.70rem;
+	font-size:0.90rem;
 	width:80%;
 	text-align:start;
 	margin-bottom:0;
