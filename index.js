@@ -54,13 +54,14 @@ wss.on("connection",async (ws)=>{
 			clients.splice(cliIndex,1);
 	});
 	ws.on("message",(m)=>{
-		console.log("%s from client %s to",m,ws.id);
+		console.log("%s from client %s",m,ws.id);
 		let message = Buffer.from(m,"utf-8").toString();
-		emit(ws,message);
-		if(noConnectedClients(ws.urlid)<2&&m!=''){
+		//emit(ws,message);
+		if(noConnectedClients(ws.urlid)<2&&message!=''){
 		update(ws.urlid,message);
 		console.log('update request');
 		}
+		emit(ws,JSON.stringify(message));
 	});
 });
 server.listen(port, () => {

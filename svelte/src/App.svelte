@@ -8,9 +8,9 @@
 	let isHome=false;
 	let time = null;
 	window.onload=()=>{
-	if (location.protocol != 'https:') {
+	/*if (location.protocol != 'https:') {
  	location.href = 'https:' + window.location.href.substring(window.location.protocol.length);
-	}
+	}*/
 	if(window.location.href == window.location.origin+'/'){
                 isHome = true;
         }else{
@@ -19,11 +19,11 @@
 	let enc = new TextDecoder("utf8");
 	ws.addEventListener('message',(event)=>{
         
-
-	let textS = event.data;
-	console.log(textS+" "+typeof textS);
+	//console.log("mesage : "+event.data);
+	let textS = JSON.parse(event.data);
+	//console.log(textS);
 	if(textS !='')
-		tf.value = JSON.parse(textS);
+		tf.value = textS;
 	else
 		ws.send(tf.value);
 
