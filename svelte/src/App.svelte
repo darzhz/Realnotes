@@ -1,7 +1,6 @@
 <script>
 	import Button from './components/Buttons.svelte';
 	import Home from './components/Home.svelte';
-	import {fly,fade} from 'svelte/transition';
 	let state = "";
 	let tf;
 	let share;
@@ -73,7 +72,7 @@
 		<Home/>
 	{:else}
 	<h1>RealTime notes</h1>
-	<textarea id="tf" transition:fade></textarea>
+	<textarea id="tf"></textarea>
 	<Button btn={["Share","Home"]}/>
 	{/if}
 </main>
