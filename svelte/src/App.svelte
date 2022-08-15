@@ -13,15 +13,14 @@
  	location.href = 'https:' + window.location.href.substring(window.location.protocol.length);
 	}
 	if(window.location.href == window.location.origin+'/'){
-                console.log("we're home");
                 isHome = true;
         }else{
 	const loc = (window.location.href).replace("http","ws");
 	let ws = new WebSocket(loc);
 	let enc = new TextDecoder("utf8");
 	ws.addEventListener('message',(event)=>{
-        console.log('Message from server ', event.data);
-	console.log(event.data+" "+typeof event.data);
+        
+
 	let textS = event.data;
 	console.log(textS+" "+typeof textS);
 	if(textS !='')

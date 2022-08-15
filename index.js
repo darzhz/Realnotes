@@ -16,8 +16,12 @@ app.get('/', (req, res) => {
   res.send("index.html");
 });
 app.get('/:id',(req,res,next) => {
+	if(req.params.id.length>4 &&req.params.id.length<=12){
 	res.sendFile(__dirname+"/svelte/public/index.html");
 	curUser= req.params.id;
+	}else{
+	res.send("<center><h1>Error:INVALID_NUM_OF_LETTERS<br>PLEASE USE 4 OR MORE LETTERS<br> (LESS THAN OR EQUAL TO 12)<\h1><p>korach ekka effort edukkam ketto<br>•́  ‿ ,•̀<\p><\center>");
+	}
 });
 wss.on("connection",async (ws)=>{
 	console.log("new connection");

@@ -19,6 +19,7 @@
 		}else
 		window.location.href += generateUrl();
 	}
+	console.log("what are you lookin for/nthua ee thappunne (◍•ᴗ•◍)");
 </script>
 <h1>Realnotes</h1>
 <div class="wrapper" in:fly="{{ y: 100, duration: 1000 }}" out:fade>
