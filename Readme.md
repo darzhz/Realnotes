@@ -1,5 +1,7 @@
 # RealNotes
-#### A realtime notes sharing app with persistent storage for up to 120 minutes and custom urls
+
+A realtime notes sharing app with persistent storage for up to 120 minutes and custom urls
+
 ---
 ## Technologies
 - Nodejs
@@ -21,7 +23,7 @@
 
 ## How it works
 
-###### *The client is pre-compiled using svelte,as I am inexperienced in svelte or any other frontend framework (or compiler in the case of svelte) the code may or may not follow best practices.i formally apologize for any mistakes that I may have made(◍•ᴗ•◍)*
+*The client is pre-compiled using svelte,as I am inexperienced in svelte or any other frontend framework (or compiler in the case of svelte) the code may or may not follow best practices.i formally apologize for any mistakes that I may have made(◍•ᴗ•◍)*
 
  The express sever listens for a request to any `/:id` endpoint where `id>=4&<=12` this entry is added to the mongodb server where it is indexed as TTL index with ExpireAfter set to `7200` seconds.This lookup is only done if the number of connected clients > 1
 
@@ -41,11 +43,11 @@ the mongodb database schema is as follows:<br>
           }
 }
 ```
+ *this implementation is really simple and might not perform well with larger number of client connections.However feel free to improve upon my work*
 
-###### __this implementation is really simple and might not perform well with larger number of client connections.However feel free to improve upon my work__
 ---
 ## live demo
-#### A live app has been published on glitch and is updated whenever a significant update is made [Realnotes.glitch.me](https://realnotes.glitch.me)
+ A live app has been published on glitch and is updated whenever a significant update is made [Realnotes.glitch.me](https://realnotes.glitch.me)
 ## Screenshots
 
 ![screenhot 1](https://raw.githubusercontent.com/darzhz/Realnotes/main/assets/0.png)
