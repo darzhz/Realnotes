@@ -2,19 +2,18 @@ require('dotenv').config();
 const { MongoClient, ServerApiVersion,ObjectId } = require('mongodb');
 const express = require('express');
 const path = require('path');
+const { Telegraf } = require('telegraf');
 const app = express();
 const server = require('http').createServer(app);
 const webSocket = require('ws');
 const port = 8080;
 const wss = new webSocket.Server({server:server});
 const build = path.join(__dirname,"svelte/public");
+const tele =  new Telegraf(process.env.TGID);
 let clients = [];
 let con = null;
 let curUser= null;
 app.use(express.static(build));
-app.get('/', (req, res) => {
-  res.send("index.html");
-});
 app.get('/:id',(req,res,next) => {
 	if(req.params.id.length>4 &&req.params.id.length<=12){
 	res.sendFile(__dirname+"/svelte/public/index.html");
@@ -22,10 +21,10 @@ app.get('/:id',(req,res,next) => {
 	}else{
 	res.send("<center><h1>Error:INVALID_NUM_OF_LETTERS<br>PLEASE USE 4 OR MORE LETTERS<br> (LESS THAN OR EQUAL TO 12)<\h1><p>korach ekka effort edukkam ketto<br>•́  ‿ ,•̀<\p><\center>");
 	}
+	alertMe(req);
 });
 wss.on("connection",async (ws)=>{
 	console.log("new connection");
-	//ws.on("open",()=>{
         ws.id=uuidv4();
 	ws.urlid=curUser;
 	//if there are no users search database
@@ -45,7 +44,6 @@ wss.on("connection",async (ws)=>{
 	}
 	clients.push(ws);
         console.log("number of connected users: "+clients.length);
-        //});
 	ws.on("close",()=>{
 		console.log(ws.id+" left");
 		cliIndex = clients.findIndex(i=>i.id===ws.id);
@@ -67,6 +65,7 @@ wss.on("connection",async (ws)=>{
 server.listen(port, () => {
   console.log(`Example app listening on port ${port}`)
 });
+tele.startPolling()
 //
 //		Utility functions
 //
@@ -92,8 +91,13 @@ function uuidv4() {
     return v.toString(16);
   });
 }
+function alertMe(req){
+	let header = JSON.parse(JSON.stringify(req.headers))
+  	let device = header['user-agent'].match(/\(([^)]+)\)/)[1];
+	tele.telegram.sendMessage(process.env.TUID,"Accessed Realnotes"+" from "+device);
+}
 const usrname = process.env.USR_NAME;
-const passwrd   = process.env.PASSWRD
+const passwrd   = process.env.PASSWRD;
 const uri = "mongodb+srv://"+usrname+":"+passwrd+"@cluster0.yazfjdn.mongodb.net/?retryWrites=true&w=majority";
 async function insertNew(url,text){
         const client = new MongoClient(uri);
