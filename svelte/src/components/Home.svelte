@@ -1,9 +1,10 @@
 <script>
 	import { fade,fly } from 'svelte/transition';
+	import Info from './Infotrail.svelte'; 
 	let target = '';
 	let joinbtn = false;
 	function join(){
-		if(target.length>=4&&target.length<=12)
+		if(target.length>=4&&target.length<=14)
 			joinbtn = true;
 		else
 			joinbtn = false;
@@ -15,9 +16,9 @@
 	function New(){
 		if(joinbtn){
 		target = target.replace(' ','_');
-		window.location.href += target;
+		window.location.href += 'notes/'+target;
 		}else
-		window.location.href += generateUrl();
+		window.location.href += 'notes/'+generateUrl();
 	}
 console.log("nthua ee thappunne (◍•ᴗ•◍)");
 </script>
@@ -26,7 +27,7 @@ console.log("nthua ee thappunne (◍•ᴗ•◍)");
 	<div class="whopper">
 	<div class="sub-wrapper">
 		<button label="new note" on:click={New} id="new">New note</button>
-		<input label="input link" on:input={join} bind:value={target} type="text" placeholder="Enter a Code or a link"/>
+		<input label="input link" bind:value={target} on:input={join} type="text" placeholder="Enter a Code or a link"/>
 		{#if joinbtn}
 		<button transition:fade on:click={New} id="join">join</button>
 		{/if}
@@ -38,6 +39,7 @@ console.log("nthua ee thappunne (◍•ᴗ•◍)");
 	</div>
 	</div>
 </div>
+<Info/>
 <style>
 	@import url('https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@200;300;400&display=swap');
 	:global(body){
@@ -76,6 +78,10 @@ console.log("nthua ee thappunne (◍•ᴗ•◍)");
             inset -20px -20px 100px #b9c4d1;
 	color:white;
 	border:none;
+	border-radius:8px;
+	user-select: none;                                      -webkit-user-select: none;
+	touch-action: manipulation;
+	border-top-left-radius:0;                       	border-bottom-left-radius:0;
 	outline:none;
 	min-width:60vw;
 	}

@@ -36,7 +36,7 @@
 		clearTimeout(time);
 		time = setTimeout(()=>{
 			ws.send(tf.value);
-		},1000);
+		},750);
 	});
 	share.addEventListener('click', event => {
  	 if (navigator.share) {
@@ -82,6 +82,8 @@
 	:root{
 		--pri:#bcc5ce;
 		--sec:#939fae;
+		--priAlt:#947FFE;
+		--secAlt:#A998FE;
 	}
 	main {
 		text-align: center;

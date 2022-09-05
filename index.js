@@ -14,15 +14,25 @@ let clients = [];
 let con = null;
 let curUser= null;
 app.use(express.static(build));
-app.get('/:id',(req,res,next) => {
-	if(req.params.id.length>4 &&req.params.id.length<=12){
+app.get('/notes/:id',(req,res,next) => {
+	if(req.params.id.length>4 &&req.params.id.length<=14){
 	res.sendFile(__dirname+"/svelte/public/index.html");
 	curUser= req.params.id;
+	console.log(clients.length);
 	}else{
-	res.send("<center><h1>Error:INVALID_NUM_OF_LETTERS<br>PLEASE USE 4 OR MORE LETTERS<br> (LESS THAN OR EQUAL TO 12)<\h1><p>korach ekka effort edukkam ketto<br>•́  ‿ ,•̀<\p><\center>");
+	res.send("<center><h1>Error:INVALID_NUM_OF_LETTERS<br>PLEASE USE 4 OR MORE LETTERS<br> (LESS THAN OR EQUAL TO 14)<\h1><p>korach ekka effort edukkam ketto<br>•́  ‿ ,•̀<\p><\center>");
 	}
-	alertMe(req);
+	//alertMe(req);
 });
+app.get('/info', async (req, res) => {
+	let c = await count(uri);
+	let packet = { 
+		"NumD":await count(uri),
+		"NumL":clients.length,
+		"NumS": await getViewInc(uri)
+	}
+  	await res.send(JSON.stringify(packet));
+})
 wss.on("connection",async (ws)=>{
 	console.log("new connection");
         ws.id=uuidv4();
@@ -122,6 +132,26 @@ async function search(url){
         client.close();
         return result;
         }
+async function count(url){                                     const client = new MongoClient(uri);                    const dbName = 'realnotes';                             const db = client.db(dbName);                        const collection = db.collection('notes');
+        let result = await collection.estimatedDocumentCount();
+        client.close();
+        return result;
+        }
+async function getViewInc(url){
+	const client = new MongoClient(uri);
+       const dbName = 'realnotes';
+       const db = client.db(dbName);                        const collection = db.collection('views');
+	try{
+	let result = await collection.findOne({"viewid":"global"});
+	if(result)
+	await collection.updateOne({ "viewid": "global" }, { $inc: { "views": 1 } });
+	client.close();
+        return result.views;
+	}catch(err){
+	console.log(err);
+	}
+	return null
+	}
 async function update(url,text){
         const client = new MongoClient(uri);
         const dbName = 'realnotes';
