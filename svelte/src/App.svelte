@@ -73,7 +73,7 @@
 		<Home/>
 	{:else}
 	<h1>RealTime notes</h1>
-	<textarea id="tf"></textarea>
+	<textarea id="tf" spellcheck="false"></textarea>
 	<Button btn={["Share","Home"]}/>
 	{/if}
 </main>

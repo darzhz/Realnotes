@@ -54,11 +54,13 @@ console.log("nthua ee thappunne (◍•ᴗ•◍)");
 	/*display:flex;
 	justify-content:center;*/
 	min-height:62vh;
-	width:100%;
+	width:90%;
 	border-radius: 50px;
 	background: linear-gradient(145deg, #b4becb, #97a0ab);
 	box-shadow:  20px 20px 60px #8f97a2,
              -20px -20px 60px #c1cddb;
+    margin-left: auto;
+    margin-right: auto;
 	}
 	.sub-wrapper{
 	display:flex;
@@ -83,7 +85,8 @@ console.log("nthua ee thappunne (◍•ᴗ•◍)");
 	touch-action: manipulation;
 	border-top-left-radius:0;                       	border-bottom-left-radius:0;
 	outline:none;
-	min-width:60vw;
+	/*min-width:60vw;*/
+	width: 55%;
 	}
 	.info img{
 		max-width: 75vw;
@@ -168,4 +171,21 @@ console.log("nthua ee thappunne (◍•ᴗ•◍)");
 		position:relative;
 		top:5vh;	
 	}*/
+@media only screen and (min-width: 600px) {
+  .wrapper {
+    width: 60%;
+    padding-top: 0vh;
+    margin-top: 0vh;
+  }
+  .info img{
+		max-width: 40vw;
+		height: auto;
+	}
+	h1 {
+		padding-top: 0;
+	}
+	.info p {
+		padding-bottom: 2vh;
+	}
+}
 </style>
