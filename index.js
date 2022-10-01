@@ -13,6 +13,7 @@ const tele =  new Telegraf(process.env.TGID);
 let clients = [];
 let con = null;
 let curUser= null;
+let DEFAULT_COLLECTION = "note"
 app.use(express.static(build));
 app.get('/notes/:id',(req,res,next) => {
 	if(req.params.id.length>4 &&req.params.id.length<=14){
@@ -22,7 +23,7 @@ app.get('/notes/:id',(req,res,next) => {
 	}else{
 	res.send("<center><h1>Error:INVALID_NUM_OF_LETTERS<br>PLEASE USE 4 OR MORE LETTERS<br> (LESS THAN OR EQUAL TO 14)<\h1><p>korach ekka effort edukkam ketto<br>•́  ‿ ,•̀<\p><\center>");
 	}
-	//alertMe(req);
+	alertMe(req);
 });
 app.get('/info', async (req, res) => {
 	let c = await count(uri);
@@ -112,7 +113,8 @@ const uri = "mongodb+srv://"+usrname+":"+passwrd+"@cluster0.yazfjdn.mongodb.net/
 async function insertNew(url,text){
         const client = new MongoClient(uri);
         const dbName = 'realnotes';
-        const db = client.db(dbName);                        const collection = db.collection('notes');
+        const db = client.db(dbName);                        
+        const collection = db.collection(DEFAULT_COLLECTION);
         let isoString = new Date(Date.now()).toISOString();
         const insertResult = await collection.insertOne(     {
                 "time":new Date(isoString),
@@ -127,12 +129,12 @@ async function insertNew(url,text){
 async function search(url){
         const client = new MongoClient(uri);
         const dbName = 'realnotes';
-        const db = client.db(dbName);                        const collection = db.collection('notes');
+        const db = client.db(dbName);                        const collection = db.collection(DEFAULT_COLLECTION);
         let result = await collection.findOne({"data.url":url})
         client.close();
         return result;
         }
-async function count(url){                                     const client = new MongoClient(uri);                    const dbName = 'realnotes';                             const db = client.db(dbName);                        const collection = db.collection('notes');
+async function count(url){                                     const client = new MongoClient(uri);                    const dbName = 'realnotes';                             const db = client.db(dbName);                        const collection = db.collection(DEFAULT_COLLECTION);
         let result = await collection.estimatedDocumentCount();
         client.close();
         return result;
@@ -155,7 +157,7 @@ async function getViewInc(url){
 async function update(url,text){
         const client = new MongoClient(uri);
         const dbName = 'realnotes';
-        const db = client.db(dbName);                        const collection = db.collection('notes');
+        const db = client.db(dbName);                        const collection = db.collection(DEFAULT_COLLECTION);
         const updateResult = await collection.updateMany({ "data.url": url }, { $set: { "data.text": text } },{multi:true});
         client.close();
         return updateResult;

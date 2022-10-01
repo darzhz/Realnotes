@@ -73,7 +73,7 @@
 		<Home/>
 	{:else}
 	<h1>RealTime notes</h1>
-	<textarea id="tf" spellcheck="false"></textarea>
+	<textarea id="tf" spellcheck="false" placeholder="write something new to share 💌.."></textarea>
 	<Button btn={["Share","Home"]}/>
 	{/if}
 </main>
@@ -100,11 +100,15 @@
 		font-weight: 150;
 	}
 	textarea{
-	border:none;
-        height:60vh;
-	font-weight: 200;
-        width:100%;
-        margin:0;
+		border:none;
+		text-align:-moz-left ;
+  	height:60vh;
+		font-weight: 380;
+    /*width:100%;*/	
+    width:95%;
+    margin:0;
+    margin-left: auto;
+    margin-right: auto;
 	outline:none;
 	color:white;
 	/*border-radius:2%;
@@ -116,9 +120,28 @@
     	box-shadow: 0px 3px 10px 1px rgba(0,0,0,0.55);
 	backdrop-filter:blur(2px);
         }
-	@media (min-width: 640px) {
+  textarea:hover{
+ 	transition: all 0.3s ease-in-out;
+ 		transform: scale(1.01);
+  	box-shadow: 0px 10px 20px 2px rgba(0, 0, 0, 0.25);
+  }
+   textarea:focus{
+ 	transition: all 0.3s ease-in-out;
+ 		transform: scale(1.07);
+  	box-shadow: 0px 10px 20px 2px rgba(0, 0, 0, 0.25);
+  }
+  textarea::placeholder {
+   		text-align: center;
+   		transition:all 1s ease-in-out;
+   }
+	@media only screen and (min-width: 640px) {
 		main {
 			max-width: none;
+		}
+		textarea{
+			width: 60%;
+    padding-top: 0vh;
+    margin-top: 0vh;
 		}
 	}
 </style>
