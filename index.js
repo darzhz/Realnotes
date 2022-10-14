@@ -25,7 +25,7 @@ app.get("/notes/:id", (req, res, next) => {
       "<center><h1>Error:INVALID_NUM_OF_LETTERS<br>PLEASE USE 4 OR MORE LETTERS<br> (LESS THAN OR EQUAL TO 14)<h1><p>korach ekka effort edukkam ketto<br>•́  ‿ ,•̀<p><center>"
     );
   }
-  alertMe(req);
+  //alertMe(req);
 });
 app.get("/info", async (req, res) => {
   let c = await count(uri);

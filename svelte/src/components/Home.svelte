@@ -20,6 +20,12 @@
 		}else
 		window.location.href += 'notes/'+generateUrl();
 	}
+	function onKeyDown(e){
+		if(e.keyCode == 13){
+			if(joinbtn)
+				New();
+		}
+	}
 console.log("nthua ee thappunne (◍•ᴗ•◍)");
 </script>
 <h1>Realnotes</h1>
@@ -189,3 +195,4 @@ console.log("nthua ee thappunne (◍•ᴗ•◍)");
 	}
 }
 </style>
+<svelte:window on:keydown={onKeyDown} />

@@ -22,5 +22,8 @@
     "uuid": "^8.3.2",
     "websocket": "^1.0.34",
     "ws": "^8.8.1"
+  },
+  "devDependencies": {
+    "prettier": "^2.7.1"
   }
 }

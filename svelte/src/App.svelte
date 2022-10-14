@@ -1,12 +1,14 @@
 <script>
 	import Button from './components/Buttons.svelte';
 	import Home from './components/Home.svelte';
+	import Spinner from './components/Spinner.svelte';
 	let state = "";
 	let tf;
 	let share;
 	let home;
 	let isHome=false;
 	let time = null;
+	let Ready = false;
 	window.onload=()=>{
 	//http redirect 
 	/*if (location.protocol != 'https:') {
@@ -19,7 +21,8 @@
 	let ws = new WebSocket(loc);
 	let enc = new TextDecoder("utf8");
 	ws.addEventListener('message',(event)=>{
-        
+  Ready = true;
+  tf.readOnly = false;
 	//console.log("mesage : "+event.data);
 	let textS = JSON.parse(event.data);
 	//console.log(textS);
@@ -31,7 +34,7 @@
     });
 	tf = document.querySelector("#tf");
 	share = document.querySelector("#Share");
-	home = document.querySelector("#home");
+	home = document.querySelector("#Home");
 	tf.addEventListener('keyup',()=>{
 		clearTimeout(time);
 		time = setTimeout(()=>{
@@ -56,6 +59,9 @@
 	});
 	}
 	}
+	function toggleWrite(){
+		tf.readOnly = tf.readOnly?false:true;
+	}
 </script>
 	<svelte:head>
 	<meta charset="UTF-8">
@@ -67,17 +73,18 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	</svelte:head>
 
-<body>
 <main>
 	{#if isHome}
 		<Home/>
 	{:else}
 	<h1>RealTime notes</h1>
-	<textarea id="tf" spellcheck="false" placeholder="write something new to share 💌.."></textarea>
+	{#if !Ready}
+	<Spinner/>
+	{/if}
+	<textarea id="tf" readonly spellcheck="false" placeholder="write something new to share 💌.."></textarea>
 	<Button btn={["Share","Home"]}/>
 	{/if}
 </main>
-</body>
 <style>
 	:root{
 		--pri:#bcc5ce;
