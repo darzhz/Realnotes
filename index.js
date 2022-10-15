@@ -50,6 +50,7 @@ wss.on("connection", async (ws) => {
       ws.send(text);
     } else {
       insertNew(ws.urlid, "");
+      ws.send("");
       console.log("database insertion");
     }
   } else {
