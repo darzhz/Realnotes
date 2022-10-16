@@ -33,7 +33,7 @@ console.log("nthua ee thappunne (◍•ᴗ•◍)");
 	<div class="whopper">
 	<div class="sub-wrapper">
 		<button label="new note" on:click={New} id="new">New note</button>
-		<input label="input link" bind:value={target} on:input={join} type="text" placeholder="Enter a Code or a link"/>
+		<input label="input link" bind:value={target} on:input={join} type="text" placeholder="Enter a Code or a link" spellcheck="false" />
 		{#if joinbtn}
 		<button transition:fade on:click={New} id="join">join</button>
 		{/if}

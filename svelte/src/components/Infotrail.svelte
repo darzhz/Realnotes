@@ -13,7 +13,7 @@ onMount(async () => {
 	<p transition:fly="{{ y: 200, duration: 2000 }}">
 	Notes served : {info["NumS"]}
 	&nbsp Notes in Database : {info["NumD"]}
-	&nbsp live notes : {info["NumL"]} 
+	&nbsp Users online : {info["NumL"]} 
 	</p>
 </div>
 {/if}
