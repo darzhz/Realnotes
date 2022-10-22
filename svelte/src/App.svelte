@@ -2,6 +2,7 @@
 	import Button from './components/Buttons.svelte';
 	import Home from './components/Home.svelte';
 	import Spinner from './components/Spinner.svelte';
+	import Dinfo from './components/Dinfo.svelte';
 	let state = "";
 	let tf;
 	let share;
@@ -9,6 +10,14 @@
 	let isHome=false;
 	let time = null;
 	let Ready = false;
+	let note = {
+	created:null,
+	last_updated:"",
+	type:"PEER_UPDATE",
+	message:null,
+	lock:false,
+	users:1
+};
 	window.onload=()=>{
 	//http redirect 
 	/*if (location.protocol != 'https:') {
@@ -16,21 +25,30 @@
 	}*/
 	if(window.location.href == window.location.origin+'/'){
                 isHome = true;
-        }else{
-	const loc = (window.location.href).replace("http","ws");
-	let ws = new WebSocket(loc);
-	let enc = new TextDecoder("utf8");
-	ws.addEventListener('message',(event)=>{
-  Ready = true;
-  tf.readOnly = false;
-	//console.log("mesage : "+event.data);
-	let textS = JSON.parse(event.data);
-	//console.log(textS);
-	if(textS !='')
-		tf.value = textS;
-	else
-		ws.send(tf.value);
+ 	}else{
+		const loc = (window.location.href).replace("http","ws");
+		let ws = new WebSocket(loc);
+		let enc = new TextDecoder("utf8");
 
+		ws.addEventListener('message',(event)=>{
+  		Ready = true;
+  		tf.readOnly = false;
+  		//gets a message
+			let packet = JSON.parse(event.data);
+			console.log("received a packet :"+JSON.stringify(packet));
+			if (packet.type == "UPDATE" || packet.type == "PEER_UPDATE") {
+				note.created = packet.created;
+				note.last_updated = packet.last_updated;
+				note.users = packet.users;
+				note.lock = packet.lock;
+				note.message = packet.message;
+				console.log("setting " + note);
+				tf.value = packet.message;
+			} else if (packet == "") {
+				console.log("need update to peers");
+				console.log("sending  :" + JSON.stringify(note));
+				ws.send(JSON.stringify(note));
+			}
     });
 	tf = document.querySelector("#tf");
 	share = document.querySelector("#Share");
@@ -38,7 +56,9 @@
 	tf.addEventListener('keyup',()=>{
 		clearTimeout(time);
 		time = setTimeout(()=>{
-			ws.send(tf.value);
+			note.message = tf.value;
+			note.last_updated = new Date(Date.now()).toISOString();
+			ws.send(JSON.stringify(note));
 		},750);
 	});
 	share.addEventListener('click', event => {
@@ -81,6 +101,9 @@
 	{#if !Ready}
 	<Spinner/>
 	{/if}
+		{#if note.created}
+			<Dinfo date={note.created} last={note.last_updated}/>
+		{/if}
 	<textarea id="tf" readonly spellcheck="false" placeholder="write something new to share 💌.."></textarea>
 	<Button btn={["Share","Home"]}/>
 	{/if}

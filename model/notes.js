@@ -6,7 +6,7 @@ exports.insert = async (url, text) => {
   let isoString = new Date(Date.now()).toISOString();
   const insertResult = await collection.insertOne({
     time: new Date(isoString),
-    data: { text: text, url: url },
+    data: { text: text, url: url,last_updated: new Date(isoString),created: new Date(isoString),lock:false },
   });
   console.log("Inserted documents =>", insertResult);
   client.client.close();
@@ -41,12 +41,13 @@ exports.getViewInc = async function () {
   }
   return null;
 };
-exports.update = async function (url, text) {
+exports.update = async function (url, text,lock) {
   const client = data.initDb();
   const collection = client.db.collection(process.env.DEFAULT_COLLECTION);
+  let isoString = new Date(Date.now()).toISOString();
   const updateResult = await collection.updateMany(
     { "data.url": url },
-    { $set: { "data.text": text } },
+    { $set: { "data.text": text,"data.last_updated":new Date(isoString),"data.lock":lock } },
     { multi: true }
   );
   client.client.close();
