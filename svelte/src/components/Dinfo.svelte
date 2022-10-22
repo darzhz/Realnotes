@@ -33,9 +33,13 @@ function calcTimeDiff(current,previous){
 }
 </script>
 <div id="dates">
-	<p>Updated: {calcTimeDiff(now,last_updated.getTime())}</p>
-	<p>Created: {calcTimeDiff(now,then.getTime())} </p>
-	<p>TTL: {calcTimeDiff(tdif,now).replace("ago","left")}</p>
+	<div id="time">
+	<p id="show">{calcTimeDiff(now,last_updated.getTime())}</p>
+	<p id="hide">{calcTimeDiff(now,then.getTime())} </p>
+	</div>
+	<div id="left">
+	<p id="ttl">{calcTimeDiff(tdif,now).replace("ago","left")}</p>
+</div>
 </div>
 <style>
 	#dates {
@@ -47,10 +51,56 @@ function calcTimeDiff(current,previous){
     margin-left: auto;
     margin-right: auto;
     color: white;
-    text-align: left;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
 	}
-	#dates p:last--child{
-		text-align: right;
+	#dates p {
+    	text-align: left;
+		margin: 0;
+		z-index: 2;
+		user-select: none;
+
+	}
+	#hide{
+		opacity: 0.1;
+		transform: translateY(-2px);
+		transition: all 300ms ease-in-out;
+	}
+	#show{
+		transform: translateY(12px);
+		transition: all 300ms ease-in-out;
+	}
+	#show::before{
+		content: url('../refresh-line.png');
+		display: inline-block;
+		vertical-align: middle;
+		padding-right: 3px;
+	}
+	#ttl::before{
+		content: url('../bombb.png');
+		display: inline-block;
+		vertical-align: middle;
+		padding-right: 3px;
+	}
+	#hide::before{
+		content: url('../created.png');
+		display: inline-block;
+		vertical-align: middle;
+		padding-right: 3px;
+	}
+	#show:hover{
+		transform: translateY(0px);
+		transition: all 300ms ease-in-out;
+	}
+	#show:hover + #hide{
+		opacity: 1;
+		transition: all 300ms ease-in-out;
+	}
+	
+	#left {
+		display: flex;
+    	align-items: center;
+    	justify-content: end;
 	}
 	@media only screen and (min-width: 640px) {
 		#dates{

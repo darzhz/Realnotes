@@ -97,7 +97,7 @@
 	{#if isHome}
 		<Home/>
 	{:else}
-	<h1>RealTime notes</h1>
+	<h1>Realnotes</h1>
 	{#if !Ready}
 	<Spinner/>
 	{/if}
