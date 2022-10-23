@@ -1,25 +1,30 @@
 <script>
 	import { createEventDispatcher } from 'svelte';
 	const dispatch  = createEventDispatcher();
-	export let lockStatus;
+	export let lockStatus = false;
+	export let users;
+	users = users
 	if(lockStatus){
 		lock();
 	}
 	function copyT(){
 		dispatch('copyText');
 	}
-	let lockbtn = false;
+	$: lockbtn = lockStatus;
 	function lock(){
-		lockbtn = lockbtn?false:true;
+		lockbtn = !lockbtn;
 		dispatch('lock');
+	}
+	function save(){
+		dispatch('save');
 	}
 </script>
 	<div id="wrapper">
 		<div id="additional">
-			
+			<div id="users"class>{users}</div>
 		</div>
 		<div id="btns">
-			<div id="save" class="btns" onclick="save()"></div>
+			<div id="save" class="btns" on:click={save}></div>
 			<div id="copy" class="btns" on:click={copyT}></div>
 			<div id="lock" class="btns" class:unlock={lockbtn} on:click={lock}></div>
 			<div id="ghost" class="btns" onclick="ghost()"></div>
@@ -66,6 +71,20 @@
 	}
 	#copy::before{
 		content: url('../copy.png')
+	}
+	#users::before{
+		content: url('../users.png')
+	}
+	#users {
+		border: none;
+		height:22px;
+		vertical-align: middle;
+		color: white;
+		font-weight: 280;
+		padding-right: 1px;
+		border-radius: 6px;
+		display: inline-block;
+		transition: al  200ms ease-in-out;
 	}
 	#lock::before{
 		content: url('../unlock.png');

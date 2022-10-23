@@ -4,6 +4,7 @@
 	import Spinner from './components/Spinner.svelte';
 	import Dinfo from './components/Dinfo.svelte';
 	import Menu from './components/Menu.svelte';
+	import Toast from './components/Toast.svelte';
 	import { onMount } from 'svelte';
 	let tf;
 	let share;
@@ -11,6 +12,9 @@
 	let isHome=false;
 	let time = null;
 	let Ready = false;
+	$: tshow = false;
+	let tmesg = "";
+	let ws;
 	let note = {
 	created:null,
 	last_updated:"",
@@ -19,6 +23,8 @@
 	lock:false,
 	users:1
 };
+	$: lockStat = note.lock;
+	$: userCount = note.users;
 	onMount(async()=>{
 			//http redirect 
 	/*if (location.protocol != 'https:') {
@@ -28,25 +34,20 @@
                 isHome = true;
  	}else{
 		const loc = (window.location.href).replace("http","ws");
-		let ws = new WebSocket(loc);
+		ws = new WebSocket(loc);
 		ws.addEventListener('message',(event)=>{
   		Ready = true;
-  		tf.readOnly = note.lock;
+  		// tf.readOnly = note.lock;
   		//gets a message
 			let packet = JSON.parse(event.data);
 			console.log("received a packet :"+JSON.stringify(packet));
 			if (packet.type == "UPDATE" || packet.type == "PEER_UPDATE") {
-				// note.created = packet.created;
-				// note.last_updated = packet.last_updated;
-				// note.users = packet.users;
-				//note.lock = packet.lock;
-				// note.message = packet.message;
 				note =  packet;
-				note.lock = note.lock;
-				console.log("setting " + JSON.stringify(note.message));
-				tf.value = packet.message;
+				tf.readOnly = note.lock;
+				//console.log("setting " + JSON.stringify(note.message));
+				//tf.value = packet.message;
 			} else if (packet == "") {
-				console.log("need update to peers");
+				showToast("New user connected");
 				console.log("sending  :" + JSON.stringify(note));
 				ws.send(JSON.stringify(note));
 			}
@@ -57,15 +58,16 @@
 	tf.addEventListener('keyup',()=>{
 		clearTimeout(time);
 		time = setTimeout(()=>{
-			note.message = tf.value;
-			note.last_updated = new Date(Date.now()).toISOString();
-			ws.send(JSON.stringify(note));
+			//note.message = tf.value;
+			// note.last_updated = new Date(Date.now()).toISOString();
+			// ws.send(JSON.stringify(note));
+			sendNote();
 		},750);
 	});
 	share.addEventListener('click', event => {
  	 if (navigator.share) {
  	   navigator.share({
-	      title: 'checkout this Live notes',
+	      title: 'checkout this Live note on Realnotes',
 	      url: window.location.href
     	}).then(() => {
       		console.log('Thanks for sharing!');
@@ -73,6 +75,7 @@
     .catch(console.error);
   } else {
     navigator.clipboard.writeText(window.location.href);
+     showToast("Link to this note  has been copied");
   }
 });
 	home.addEventListener('click',()=>{
@@ -81,12 +84,27 @@
 	}
 	});
 	function toggleWrite(e){
-		tf.readOnly = tf.readOnly?false:true;
+		let tf = document.querySelector("#tf");
+		tf.readOnly = !tf.readOnly;
+		let st =  tf.readOnly?"Locked":"UnLocked";
 		note.lock = tf.readOnly;
-		console.log("wwrite mode is "+tf.readOnly);
+		sendNote();
+		showToast("note is  "+st);
 	}
 	function copyClip(e){
 		 navigator.clipboard.writeText(note.message);
+		 showToast("Note saved to clipboard")
+	}
+	function sendNote(){
+			note.last_updated = new Date(Date.now()).toISOString();
+			ws.send(JSON.stringify(note));
+			 showToast("Note saved/send")
+	}
+	function showToast(mesg){
+		tshow = true;
+		tmesg = mesg;
+		console.log("toast");
+		setTimeout(()=>{tshow=false},5000);
 	}
 </script>
 	<svelte:head>
@@ -110,10 +128,11 @@
 		{#if note.created}
 			<Dinfo  {note}/> 
 		{/if}
-	<textarea id="tf" readonly spellcheck="false" placeholder="write something new to share 💌.."></textarea>
-		<Menu on:copyText={copyClip} on:lock={toggleWrite} lockStatus={note.lock}/>
+	<textarea id="tf" readonly spellcheck="false" bind:value={note.message} placeholder="write something new to share 💌.."></textarea>
+		<Menu on:copyText={copyClip} on:lock={toggleWrite} on:save={sendNote} lockStatus={lockStat} users={userCount}/>
 	<Button btn={["Share","Home"]}/>
 	{/if}
+	<Toast show={tshow} message={tmesg}/>
 </main>
 <style>
 	:root{
