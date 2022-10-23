@@ -15,7 +15,7 @@ export let btn=[];
 	right:0;
 	text-align:center;
 	z-index:1;
-	margin-top:2rem;
+	margin-top:1rem;
 }
 .button {
 margin:0 0.5em 0 0.5em;

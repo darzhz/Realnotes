@@ -20,6 +20,12 @@
 		}else
 		window.location.href += 'notes/'+generateUrl();
 	}
+	function onKeyDown(e){
+		if(e.keyCode == 13){
+			if(joinbtn)
+				New();
+		}
+	}
 console.log("nthua ee thappunne (◍•ᴗ•◍)");
 </script>
 <h1>Realnotes</h1>
@@ -27,7 +33,7 @@ console.log("nthua ee thappunne (◍•ᴗ•◍)");
 	<div class="whopper">
 	<div class="sub-wrapper">
 		<button label="new note" on:click={New} id="new">New note</button>
-		<input label="input link" bind:value={target} on:input={join} type="text" placeholder="Enter a Code or a link"/>
+		<input label="input link" bind:value={target} on:input={join} type="text" placeholder="Enter a Code or a link" spellcheck="false" />
 		{#if joinbtn}
 		<button transition:fade on:click={New} id="join">join</button>
 		{/if}
@@ -189,3 +195,4 @@ console.log("nthua ee thappunne (◍•ᴗ•◍)");
 	}
 }
 </style>
+<svelte:window on:keydown={onKeyDown} />

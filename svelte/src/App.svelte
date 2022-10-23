@@ -1,47 +1,73 @@
-<script>
+<script >
 	import Button from './components/Buttons.svelte';
 	import Home from './components/Home.svelte';
-	let state = "";
+	import Spinner from './components/Spinner.svelte';
+	import Dinfo from './components/Dinfo.svelte';
+	import Menu from './components/Menu.svelte';
+	import Toast from './components/Toast.svelte';
+	import { onMount } from 'svelte';
 	let tf;
 	let share;
 	let home;
 	let isHome=false;
 	let time = null;
-	window.onload=()=>{
-	//http redirect 
+	let Ready = false;
+	$: tshow = false;
+	let tmesg = "";
+	let ws;
+	let note = {
+	created:null,
+	last_updated:"",
+	type:"PEER_UPDATE",
+	message:'no text here',
+	lock:false,
+	users:1
+};
+	$: lockStat = note.lock;
+	$: userCount = note.users;
+	onMount(async()=>{
+			//http redirect 
 	/*if (location.protocol != 'https:') {
  	location.href = 'https:' + window.location.href.substring(window.location.protocol.length);
 	}*/
 	if(window.location.href == window.location.origin+'/'){
                 isHome = true;
-        }else{
-	const loc = (window.location.href).replace("http","ws");
-	let ws = new WebSocket(loc);
-	let enc = new TextDecoder("utf8");
-	ws.addEventListener('message',(event)=>{
-        
-	//console.log("mesage : "+event.data);
-	let textS = JSON.parse(event.data);
-	//console.log(textS);
-	if(textS !='')
-		tf.value = textS;
-	else
-		ws.send(tf.value);
-
+ 	}else{
+		const loc = (window.location.href).replace("http","ws");
+		ws = new WebSocket(loc);
+		ws.addEventListener('message',(event)=>{
+  		Ready = true;
+  		// tf.readOnly = note.lock;
+  		//gets a message
+			let packet = JSON.parse(event.data);
+			console.log("received a packet :"+JSON.stringify(packet));
+			if (packet.type == "UPDATE" || packet.type == "PEER_UPDATE") {
+				note =  packet;
+				tf.readOnly = note.lock;
+				//console.log("setting " + JSON.stringify(note.message));
+				//tf.value = packet.message;
+			} else if (packet == "") {
+				showToast("New user connected");
+				console.log("sending  :" + JSON.stringify(note));
+				ws.send(JSON.stringify(note));
+			}
     });
 	tf = document.querySelector("#tf");
 	share = document.querySelector("#Share");
-	home = document.querySelector("#home");
+	home = document.querySelector("#Home");
 	tf.addEventListener('keyup',()=>{
 		clearTimeout(time);
 		time = setTimeout(()=>{
-			ws.send(tf.value);
+			//note.message = tf.value;
+			// note.last_updated = new Date(Date.now()).toISOString();
+			// ws.send(JSON.stringify(note));
+			sendNote();
 		},750);
 	});
 	share.addEventListener('click', event => {
  	 if (navigator.share) {
  	   navigator.share({
-	      title: 'checkout this Live notes',
+	      title: 'checkout this Live note on Realnotes',
 	      url: window.location.href
     	}).then(() => {
       		console.log('Thanks for sharing!');
@@ -49,12 +75,36 @@
     .catch(console.error);
   } else {
     navigator.clipboard.writeText(window.location.href);
+     showToast("Link to this note  has been copied");
   }
 });
 	home.addEventListener('click',()=>{
 		window.location.href = window.location.origin;
 	});
 	}
+	});
+	function toggleWrite(e){
+		let tf = document.querySelector("#tf");
+		tf.readOnly = !tf.readOnly;
+		let st =  tf.readOnly?"Locked":"UnLocked";
+		note.lock = tf.readOnly;
+		sendNote();
+		showToast("note is  "+st);
+	}
+	function copyClip(e){
+		 navigator.clipboard.writeText(note.message);
+		 showToast("Note saved to clipboard")
+	}
+	function sendNote(){
+			note.last_updated = new Date(Date.now()).toISOString();
+			ws.send(JSON.stringify(note));
+			 showToast("Note saved/send")
+	}
+	function showToast(mesg){
+		tshow = true;
+		tmesg = mesg;
+		console.log("toast");
+		setTimeout(()=>{tshow=false},5000);
 	}
 </script>
 	<svelte:head>
@@ -67,17 +117,23 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	</svelte:head>
 
-<body>
 <main>
 	{#if isHome}
 		<Home/>
 	{:else}
-	<h1>RealTime notes</h1>
-	<textarea id="tf" spellcheck="false" placeholder="write something new to share 💌.."></textarea>
+	<h1>Realnotes</h1>
+	{#if !Ready}
+	<Spinner/>
+	{/if}
+		{#if note.created}
+			<Dinfo  {note}/> 
+		{/if}
+	<textarea id="tf" readonly spellcheck="false" bind:value={note.message} placeholder="write something new to share 💌.."></textarea>
+		<Menu on:copyText={copyClip} on:lock={toggleWrite} on:save={sendNote} lockStatus={lockStat} users={userCount}/>
 	<Button btn={["Share","Home"]}/>
 	{/if}
+	<Toast show={tshow} message={tmesg}/>
 </main>
-</body>
 <style>
 	:root{
 		--pri:#bcc5ce;
@@ -117,7 +173,7 @@
 
 	background-color: rgba(53, 53, 53, 0.20);
     	border-radius: 10px;
-    	box-shadow: 0px 3px 10px 1px rgba(0,0,0,0.55);
+    	box-shadow: 0px 3px 10px 1px rgba(0,0,0,0.35);
 	backdrop-filter:blur(2px);
         }
   textarea:hover{
