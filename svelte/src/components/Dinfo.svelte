@@ -3,11 +3,10 @@ import { onMount } from 'svelte';
 import { fly } from 'svelte/transition';
 // onMount(async () => {
 // 	});
-export let date;
-export let last;
+export let note;
 let week = 604800000;
-let then = new Date(date);
-let last_updated = new Date(last);
+let then = new Date(note.created);
+let last_updated = new Date(note.last_updated);
 let now  = Date.now();
 let tdif = then.getTime() + week;
 function calcTimeDiff(current,previous){

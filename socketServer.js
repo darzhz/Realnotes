@@ -19,7 +19,7 @@ exports.initWeSocketServer = async (server) => {
         console.log("search operation");
         data = res.data;//JSON.stringify(res.data);
         //console.log(format.getNote(data.created,data.last_updated,0,data.text,data.lock));
-        ws.send(format.getNote(data.created,data.last_updated,0,data.text,data.lock));
+        ws.send(format.getNote(data.created,data.last_updated,1,data.text,data.lock));
       } else {
         //new note created
         console.log("database insertion");
@@ -45,9 +45,10 @@ exports.initWeSocketServer = async (server) => {
       let message = JSON.parse(m);//Buffer.from(m, "utf-8").toString();
       //util.emit(ws,message);
       if (util.noConnectedClients(ws.urlid) < 2 && message.message != "") {
-        note.update(ws.urlid, message.message);
+        note.update(ws.urlid, message.message,message.lock);
         console.log("note.update request");
       }
+      message.users = util.noConnectedClients(ws.urlid);
       util.emit(ws, JSON.stringify(message));
     });
   });

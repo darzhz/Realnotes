@@ -1,9 +1,10 @@
-<script>
+<script >
 	import Button from './components/Buttons.svelte';
 	import Home from './components/Home.svelte';
 	import Spinner from './components/Spinner.svelte';
 	import Dinfo from './components/Dinfo.svelte';
-	let state = "";
+	import Menu from './components/Menu.svelte';
+	import { onMount } from 'svelte';
 	let tf;
 	let share;
 	let home;
@@ -14,12 +15,12 @@
 	created:null,
 	last_updated:"",
 	type:"PEER_UPDATE",
-	message:null,
+	message:'no text here',
 	lock:false,
 	users:1
 };
-	window.onload=()=>{
-	//http redirect 
+	onMount(async()=>{
+			//http redirect 
 	/*if (location.protocol != 'https:') {
  	location.href = 'https:' + window.location.href.substring(window.location.protocol.length);
 	}*/
@@ -28,21 +29,21 @@
  	}else{
 		const loc = (window.location.href).replace("http","ws");
 		let ws = new WebSocket(loc);
-		let enc = new TextDecoder("utf8");
-
 		ws.addEventListener('message',(event)=>{
   		Ready = true;
-  		tf.readOnly = false;
+  		tf.readOnly = note.lock;
   		//gets a message
 			let packet = JSON.parse(event.data);
 			console.log("received a packet :"+JSON.stringify(packet));
 			if (packet.type == "UPDATE" || packet.type == "PEER_UPDATE") {
-				note.created = packet.created;
-				note.last_updated = packet.last_updated;
-				note.users = packet.users;
-				note.lock = packet.lock;
-				note.message = packet.message;
-				console.log("setting " + note);
+				// note.created = packet.created;
+				// note.last_updated = packet.last_updated;
+				// note.users = packet.users;
+				//note.lock = packet.lock;
+				// note.message = packet.message;
+				note =  packet;
+				note.lock = note.lock;
+				console.log("setting " + JSON.stringify(note.message));
 				tf.value = packet.message;
 			} else if (packet == "") {
 				console.log("need update to peers");
@@ -78,9 +79,14 @@
 		window.location.href = window.location.origin;
 	});
 	}
-	}
-	function toggleWrite(){
+	});
+	function toggleWrite(e){
 		tf.readOnly = tf.readOnly?false:true;
+		note.lock = tf.readOnly;
+		console.log("wwrite mode is "+tf.readOnly);
+	}
+	function copyClip(e){
+		 navigator.clipboard.writeText(note.message);
 	}
 </script>
 	<svelte:head>
@@ -102,9 +108,10 @@
 	<Spinner/>
 	{/if}
 		{#if note.created}
-			<Dinfo date={note.created} last={note.last_updated}/>
+			<Dinfo  {note}/> 
 		{/if}
 	<textarea id="tf" readonly spellcheck="false" placeholder="write something new to share 💌.."></textarea>
+		<Menu on:copyText={copyClip} on:lock={toggleWrite} lockStatus={note.lock}/>
 	<Button btn={["Share","Home"]}/>
 	{/if}
 </main>
@@ -147,7 +154,7 @@
 
 	background-color: rgba(53, 53, 53, 0.20);
     	border-radius: 10px;
-    	box-shadow: 0px 3px 10px 1px rgba(0,0,0,0.55);
+    	box-shadow: 0px 3px 10px 1px rgba(0,0,0,0.35);
 	backdrop-filter:blur(2px);
         }
   textarea:hover{
