@@ -60,7 +60,7 @@ console.log("nthua ee thappunne (◍•ᴗ•◍)");
 	/*display:flex;
 	justify-content:center;*/
 	min-height:62vh;
-	width:90%;
+	width:95%;
 	border-radius: 50px;
 	background: linear-gradient(145deg, #b4becb, #97a0ab);
 	box-shadow:  20px 20px 60px #8f97a2,

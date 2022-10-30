@@ -2,21 +2,33 @@
 	import { createEventDispatcher } from 'svelte';
 	const dispatch  = createEventDispatcher();
 	export let lockStatus = false;
+	export  let ghostStatus  = false;
 	export let users;
 	users = users
+	$: lockbtn = lockStatus;
+	$: gstat = ghostStatus;
 	if(lockStatus){
 		lock();
+	}
+	if(ghostStatus){
+		ghost();
 	}
 	function copyT(){
 		dispatch('copyText');
 	}
-	$: lockbtn = lockStatus;
 	function lock(){
 		lockbtn = !lockbtn;
 		dispatch('lock');
 	}
 	function save(){
 		dispatch('save');
+	}
+	function ghost(){
+		dispatch('ghost');
+		gstat = !gstat;
+	}
+	function bug(){
+		dispatch('bug');
 	}
 </script>
 	<div id="wrapper">
@@ -27,8 +39,8 @@
 			<div id="save" class="btns" on:click={save}></div>
 			<div id="copy" class="btns" on:click={copyT}></div>
 			<div id="lock" class="btns" class:unlock={lockbtn} on:click={lock}></div>
-			<div id="ghost" class="btns" onclick="ghost()"></div>
-			<div id="bug" class="btns" onclick="bug()"></div>
+			<div id="ghost" class="btns" class:ghost={gstat} on:click={ghost}></div>
+			<div id="bug" class="btns" on:click={bug}></div>
 		</div>
 	</div>
 <style>
@@ -92,6 +104,9 @@
 	.unlock{
 		content: url('../lock.png');
 		background-color: rgba(255, 0, 0, 0.30);
+	}
+	.ghost{
+		background-color: rgba(0, 0, 0, 0.30);
 	}
 	#ghost::before{
 		content: url('../ghost.png');
