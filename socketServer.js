@@ -22,7 +22,7 @@ exports.initWeSocketServer = async (server) => {
         ws.send(format.getNote(data.created,data.last_updated,1,data.text,data.lock));
       } else {
         //new note created
-        console.log("database insertion");
+        console.log("database insertion "+ws.urlid);
         note.insert(ws.urlid, "");
         ws.send(format.newNote());
       }
@@ -44,7 +44,7 @@ exports.initWeSocketServer = async (server) => {
       console.log("received from client "+m);
       let message = JSON.parse(m);//Buffer.from(m, "utf-8").toString();
       //util.emit(ws,message);
-      if (util.noConnectedClients(ws.urlid) < 2 && message.message != "") {
+      if (util.noConnectedClients(ws.urlid) < 2 && message.message != "" && message.type  != "GHOST") {
         note.update(ws.urlid, message.message,message.lock);
         console.log("note.update request");
       }

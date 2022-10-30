@@ -6,13 +6,14 @@ const app = express();
 const server = require("http").createServer(app);
 const webSocketServer =  require("./socketServer");
 const build = path.join(__dirname, "svelte/public");
-const tele = new Telegraf(process.env.TGID);
+ tele = new Telegraf(process.env.TGID);
 clients = [];
 curUser = null;
 let con = null;
 app.use(express.static(build));
 app.use('/notes',require('./routes/notes'));
 app.use('/info',require('./routes/info'));
+app.use('/report',require('./routes/report'));
 webSocketServer.initWeSocketServer(server);
 server.listen(process.env.PORT, () => {
   console.log(`realnotes listening on port ${process.env.PORT}`);

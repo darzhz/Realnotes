@@ -5,11 +5,13 @@
 	import Dinfo from './components/Dinfo.svelte';
 	import Menu from './components/Menu.svelte';
 	import Toast from './components/Toast.svelte';
+	import Modal from './components/Modal.svelte';
 	import { onMount } from 'svelte';
 	let tf;
 	let share;
 	let home;
 	let isHome=false;
+	let showMod=false;
 	let time = null;
 	let Ready = false;
 	$: tshow = false;
@@ -19,11 +21,12 @@
 	created:null,
 	last_updated:"",
 	type:"PEER_UPDATE",
-	message:'no text here',
+	message:'',
 	lock:false,
 	users:1
 };
 	$: lockStat = note.lock;
+	$: gstat = note.type=="GHOST"?true:false;
 	$: userCount = note.users;
 	onMount(async()=>{
 			//http redirect 
@@ -46,6 +49,14 @@
 				tf.readOnly = note.lock;
 				//console.log("setting " + JSON.stringify(note.message));
 				//tf.value = packet.message;
+			}else if(packet.type == "NEW"){
+				note =  packet;
+				tf.readOnly = note.lock;
+				showToast("New  Note found")
+			}else if(packet.type == "GHOST"){
+				note =  packet;
+				tf.readOnly = note.lock;
+				showToast("Ghostmode is Active:notes will note be saved");
 			} else if (packet == "") {
 				showToast("New user connected");
 				console.log("sending  :" + JSON.stringify(note));
@@ -106,6 +117,15 @@
 		console.log("toast");
 		setTimeout(()=>{tshow=false},5000);
 	}
+	function ghostMode(){
+		note.type  = note.type=="GHOST"?"PEER_UPDATE":"GHOST";
+		showToast("ghost mode is "+gstat?"Active":"Inactive");
+		sendNote();
+	}
+	function bugReport(){
+		showToast("bug report");
+		showMod  = true;
+	}
 </script>
 	<svelte:head>
 	<meta charset="UTF-8">
@@ -122,6 +142,9 @@
 		<Home/>
 	{:else}
 	<h1>Realnotes</h1>
+		{#if showMod}
+			<Modal on:close="{() => showMod = false}"/>
+		{/if}
 	{#if !Ready}
 	<Spinner/>
 	{/if}
@@ -129,7 +152,7 @@
 			<Dinfo  {note}/> 
 		{/if}
 	<textarea id="tf" readonly spellcheck="false" bind:value={note.message} placeholder="write something new to share 💌.."></textarea>
-		<Menu on:copyText={copyClip} on:lock={toggleWrite} on:save={sendNote} lockStatus={lockStat} users={userCount}/>
+		<Menu on:copyText={copyClip} on:lock={toggleWrite} on:ghost={ghostMode} on:bug={bugReport} on:save={sendNote} lockStatus={lockStat} ghostStatus={gstat} users={userCount}/>
 	<Button btn={["Share","Home"]}/>
 	{/if}
 	<Toast show={tshow} message={tmesg}/>
@@ -147,43 +170,56 @@
 		margin: 0;
 	}
 	:global(body){
-		background-image:linear-gradient(90deg,var(--pri),var(--sec));
+		background-image:linear-gradient(270deg,var(--pri),var(--sec));
+		/*animation:go 15s ease infinite;*/
+		overflow-y:hidden;
 	}
+
+@keyframes go {
+	from {
+		background-size:100% 0%;
+	}
+	to {
+		background-size:100% 0%;
+	}
+}
+
+
 	h1 {
 		color: #ffffff;
 		text-transform: uppercase;
 		font-size: 2em;
 		font-weight: 150;
+		user-select: none;
 	}
 	textarea{
 		border:none;
 		text-align:-moz-left ;
-  	height:60vh;
+  		height:60vh;
 		font-weight: 380;
-    /*width:100%;*/	
-    width:95%;
-    margin:0;
-    margin-left: auto;
-    margin-right: auto;
-	outline:none;
-	color:white;
-	/*border-radius:2%;
-	background-color:transparent;
-	backdrop-filter:blur(5px);*/
-
-	background-color: rgba(53, 53, 53, 0.20);
+    	/*width:100%;*/	
+    	width:95%;
+    	margin:0;
+    	margin-left: auto;
+ 		margin-right: auto;
+		outline:none;
+		color:white;
+		/*border-radius:2%;
+		background-color:transparent;
+		backdrop-filter:blur(5px);*/
+		background-color: rgba(53, 53, 53, 0.20);
     	border-radius: 10px;
     	box-shadow: 0px 3px 10px 1px rgba(0,0,0,0.35);
-	backdrop-filter:blur(2px);
+		backdrop-filter:blur(2px);
         }
   textarea:hover{
  	transition: all 0.3s ease-in-out;
- 		transform: scale(1.01);
+ 	transform: scale(1.01);
   	box-shadow: 0px 10px 20px 2px rgba(0, 0, 0, 0.25);
   }
    textarea:focus{
  	transition: all 0.3s ease-in-out;
- 		transform: scale(1.07);
+ 	transform: scale(1.07);
   	box-shadow: 0px 10px 20px 2px rgba(0, 0, 0, 0.25);
   }
   textarea::placeholder {
@@ -196,8 +232,8 @@
 		}
 		textarea{
 			width: 60%;
-    padding-top: 0vh;
-    margin-top: 0vh;
+    		padding-top: 0vh;
+    		margin-top: 0vh;
 		}
 	}
 </style>
