@@ -22,7 +22,7 @@ exports.initWeSocketServer = async (server) => {
         ws.send(format.getNote(data.created,data.last_updated,1,data.text,data.lock));
       } else {
         //new note created
-        console.log("database insertion "+ws.urlid);
+        console.log("database insertion ");
         note.insert(ws.urlid, "");
         ws.send(format.newNote());
       }

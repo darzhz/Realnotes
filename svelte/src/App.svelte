@@ -30,9 +30,9 @@
 	$: userCount = note.users;
 	onMount(async()=>{
 			//http redirect 
-	/*if (location.protocol != 'https:') {
+	if (location.protocol != 'https:') {
  	location.href = 'https:' + window.location.href.substring(window.location.protocol.length);
-	}*/
+	}
 	if(window.location.href == window.location.origin+'/'){
                 isHome = true;
  	}else{
@@ -50,13 +50,12 @@
 				//console.log("setting " + JSON.stringify(note.message));
 				//tf.value = packet.message;
 			}else if(packet.type == "NEW"){
-				note =  packet;
 				tf.readOnly = note.lock;
 				showToast("New  Note found")
 			}else if(packet.type == "GHOST"){
 				note =  packet;
 				tf.readOnly = note.lock;
-				showToast("Ghostmode is Active:notes will note be saved");
+				showToast("Ghostmode is Active:Notes will not be saved");
 			} else if (packet == "") {
 				showToast("New user connected");
 				console.log("sending  :" + JSON.stringify(note));
@@ -119,11 +118,11 @@
 	}
 	function ghostMode(){
 		note.type  = note.type=="GHOST"?"PEER_UPDATE":"GHOST";
-		showToast("ghost mode is "+gstat?"Active":"Inactive");
 		sendNote();
+		showToast(`Ghost mode is ${gstat?"Active":"Inactive"}`);
 	}
 	function bugReport(){
-		showToast("bug report");
+		showToast("Please include contact info!");
 		showMod  = true;
 	}
 </script>
@@ -172,7 +171,6 @@
 	:global(body){
 		background-image:linear-gradient(270deg,var(--pri),var(--sec));
 		/*animation:go 15s ease infinite;*/
-		overflow-y:hidden;
 	}
 
 @keyframes go {
