@@ -12,6 +12,7 @@ curUser = null;
 let con = null;
 app.use(express.static(build));
 app.use('/notes',require('./routes/notes'));
+app.use('/api',require('./routes/api'));
 app.use('/info',require('./routes/info'));
 app.use('/report',require('./routes/report'));
 webSocketServer.initWeSocketServer(server);
